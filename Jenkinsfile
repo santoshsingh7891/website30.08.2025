@@ -1,13 +1,9 @@
-pipeline {
-    agent {
-        docker { 
-            image 'maven:3.8.3-openjdk-17'
-            args '-v /root/.m2:/root/.m2' // optional: cache Maven dependencies
-        }
-    }
+ pipeline {
+    agent any
 
     environment {
-        MAVEN_OPTS = "-Xmx1024m"
+        // Optional: set environment variables if needed
+        MAVEN_OPTS = '-Xmx1024m'
     }
 
     stages {
@@ -17,24 +13,21 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build & Test') {
             steps {
-                echo 'Building the project...'
-                sh 'mvn clean install'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                sh 'mvn test'
+                script {
+                    // Runs Maven inside the Docker container
+                    docker.image('maven:3.8.3-openjdk-17').inside {
+                        sh 'mvn clean install'
+                    }
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying the application...'
-                // Add your deployment commands here
+                echo 'Deploy stage placeholder'
+                // Add deployment commands here
             }
         }
     }
@@ -44,7 +37,8 @@ pipeline {
             echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Pipeline failed. Check logs.'
+            echo 'Pipeline failed. Check the logs.'
         }
     }
 }
+
