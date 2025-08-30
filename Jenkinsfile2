@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    environment {
+        DEPLOY_DIR = "/var/www/html"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Pull latest code from GitHub
+                git branch: 'main', url: 'https://github.com/santoshsingh7891/website30.08.2025.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "No build step required for static PHP website"
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // Run PHP syntax check on all files
+                sh '''
+                for file in $(find . -name "*.php"); do
+                    php -l $file
+                done
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                // Copy files to Apache web directory
+                sh '''
+                sudo rsync -av --delete ./ $DEPLOY_DIR/
+                sudo chown -R www-data:www-data $DEPLOY_DIR
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Deployment completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed. Check logs."
+        }
+    }
+}
