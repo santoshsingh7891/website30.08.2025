@@ -1,21 +1,38 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.8.3-openjdk-17'
+            args '-v /root/.m2:/root/.m2' // optional: cache Maven repo
+        }
+    }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Build') {
             steps {
-                echo 'Building..'
+                sh 'mvn clean install'
             }
         }
+
         stage('Test') {
             steps {
-                echo 'Testing..'
+                sh 'mvn test'
             }
         }
+
         stage('Deploy') {
+            when {
+                branch 'master'
+            }
             steps {
-                echo 'Deploying....'
+                sh 'ansible-playbook -i inventory.ini deploy.yml'
             }
         }
     }
 }
+
