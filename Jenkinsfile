@@ -2,30 +2,28 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                git branch: 'master', url: 'https://github.com/hshar/website.git'
+                git branch: 'main',
+                    url: 'https://github.com/santoshsingh7891/website30.08.2025.git',
+                    credentialsId: 'YOUR_GITHUB_CREDENTIAL_ID'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the project...'
-                sh 'mvn clean install || true'   // if using Maven, else adjust
+                sh 'mvn clean install'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
                 sh 'echo "No tests configured yet!"'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying to server...'
-                // Example deploy via Ansible or copy files
                 sh 'ansible-playbook -i inventory.ini deploy.yml'
             }
         }
