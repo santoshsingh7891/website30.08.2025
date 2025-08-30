@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'maven:3.9.2-jdk-17'  // correct image tag
-            args '-v /root/.m2:/root/.m2'  // optional: cache Maven repo
+            image 'maven:3.8.3-openjdk-17'
+            args '-v /root/.m2:/root/.m2' // optional: cache Maven repo
         }
     }
 
@@ -35,3 +35,4 @@ pipeline {
         }
     }
 }
+
