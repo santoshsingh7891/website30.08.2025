@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9.2-openjdk-17' // official Maven + JDK image
+            args '-v /root/.m2:/root/.m2'  // optional, for caching Maven repo
+        }
+    }
 
     stages {
         stage('Checkout') {
@@ -22,7 +27,7 @@ pipeline {
 
         stage('Deploy') {
             when {
-                branch 'master'  // Make sure this matches your production branch
+                branch 'master'
             }
             steps {
                 sh 'ansible-playbook -i inventory.ini deploy.yml'
@@ -30,4 +35,3 @@ pipeline {
         }
     }
 }
-
